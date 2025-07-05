@@ -1,0 +1,16 @@
+15
+Book;1984;Orwell;1949
+Book;Animal Farm;Orwell;1945
+PublicPrintedEdition;The Hobbit;Tolkien;1937;AllenAndUnwin;310
+Book;Brave New World;Huxley;1932
+PublicPrintedEdition;The Silmarillion;Tolkien;1977;AllenAndUnwin;365
+Book;Fahrenheit 451;Bradbury;1953
+PublicPrintedEdition;Dune;Herbert;1965;ChiltonBooks;412
+Book;The Time Machine;Wells;1895
+PublicPrintedEdition;The War of the Worlds;Wells;1898;Pearson;287
+Book;Foundation;Asimov;1951
+PublicPrintedEdition;I, Robot;Asimov;1951;GnomePress;287
+PublicPrintedEdition;The Martian Chronicles;Bradbury;1950;Doubleday;310
+Book;The Invisible Man;Wells;1898
+PublicPrintedEdition;Lord of the Rings;Tolkien;1954;AllenAndUnwin;412
+PublicPrintedEdition;Children of Dune;Herbert;1976;ChiltonBooks;365

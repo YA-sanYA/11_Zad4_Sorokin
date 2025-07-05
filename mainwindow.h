@@ -31,6 +31,8 @@ private slots:
 
     void on_LoadButton_clicked();
 
+    void on_ClearButton_clicked();
+
     void on_InfoButton_clicked();
 
     void on_ExitButton_clicked();

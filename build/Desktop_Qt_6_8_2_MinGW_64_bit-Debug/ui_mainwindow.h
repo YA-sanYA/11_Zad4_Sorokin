@@ -54,6 +54,7 @@ public:
     QPushButton *FindButton;
     QPushButton *LoadButton;
     QHBoxLayout *horizontalLayout_3;
+    QPushButton *ClearButton;
     QPushButton *InfoButton;
     QPushButton *ExitButton;
     QMenuBar *menubar;
@@ -197,6 +198,11 @@ public:
 
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setObjectName("horizontalLayout_3");
+        ClearButton = new QPushButton(centralwidget);
+        ClearButton->setObjectName("ClearButton");
+
+        horizontalLayout_3->addWidget(ClearButton);
+
         InfoButton = new QPushButton(centralwidget);
         InfoButton->setObjectName("InfoButton");
 
@@ -245,6 +251,7 @@ public:
         ReplaceButton->setText(QCoreApplication::translate("MainWindow", "\320\227\320\260\320\274\320\265\320\275\320\270\321\202\321\214", nullptr));
         FindButton->setText(QCoreApplication::translate("MainWindow", "\320\235\320\260\320\271\321\202\320\270", nullptr));
         LoadButton->setText(QCoreApplication::translate("MainWindow", "\320\227\320\260\320\263\321\200\321\203\320\267\320\270\321\202\321\214", nullptr));
+        ClearButton->setText(QCoreApplication::translate("MainWindow", "\320\236\321\207\320\270\321\202\321\201\320\272\320\260", nullptr));
         InfoButton->setText(QCoreApplication::translate("MainWindow", "\320\230\320\275\321\204\320\276\321\200\320\274\320\260\321\206\320\270\321\217 \320\276 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\265", nullptr));
         ExitButton->setText(QCoreApplication::translate("MainWindow", "\320\222\321\213\320\271\321\202\320\270", nullptr));
     } // retranslateUi

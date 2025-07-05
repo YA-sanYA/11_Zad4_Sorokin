@@ -235,6 +235,13 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
+       <widget class="QPushButton" name="ClearButton">
+        <property name="text">
+         <string>Очитска</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="InfoButton">
         <property name="text">
          <string>Информация о программе</string>

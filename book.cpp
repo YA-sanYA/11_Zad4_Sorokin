@@ -132,3 +132,14 @@ bool Book::ReplaceAt(int index, Book* newObj) {
     delete old;
     return true;
 }
+
+void Book::Clear() {
+    Book* current = first;
+    while (current) {
+        Book* next = current->next;
+        delete current;
+        current = next;
+    }
+    first = nullptr;
+    tail = nullptr;
+}

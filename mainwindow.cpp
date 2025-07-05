@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "publicprintededition.h"
 #include <QMessageBox>
+#include <QTextStream>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -47,11 +49,13 @@ void MainWindow::on_AddButton_clicked()
     QString author = ui->AuthorlineEdit->text().trimmed();
     QString year = ui->YearlineEdit->text().trimmed();
     QString publisher = ui->PublisherlineEdit->text().trimmed();
-    QString pages = ui->PagelineEdit->text().trimmed().trimmed();
+    QString pages = ui->PagelineEdit->text().trimmed();
 
     if(title.isEmpty() || author.isEmpty() || year.isEmpty() || (publisher.isEmpty() ^ (pages.isEmpty())))
     {
-        //!
+        QMessageBox::warning(this, "Ошибка ввода", "Пожалуйста, заполните все обязательные поля.\n"
+                                                   "Для книги: название, автор, год издания.\n"
+                                                   "Для издания: также издательство и количество страниц.");
         return;
     }
 
@@ -79,7 +83,7 @@ void MainWindow::on_DeleteButton_clicked()
     int ind = ui->IndexlineEdit->text().trimmed().toInt();
     if(!Book::Del(ind - 1))
     {
-        //!
+        QMessageBox::warning(this, "Удаление", "Объект с указанным номером не найден.");
     }
     Update_Table(Book::AllData());
     ui->IndexlineEdit->clear();
@@ -93,19 +97,31 @@ void MainWindow::on_ReplaceButton_clicked()
     QString author = ui->AuthorlineEdit->text().trimmed();
     QString year = ui->YearlineEdit->text().trimmed();
     QString publisher = ui->PublisherlineEdit->text().trimmed();
-    QString pages = ui->PagelineEdit->text().trimmed().trimmed();
+    QString pages = ui->PagelineEdit->text().trimmed();
+
+    Book* old = Book::getByIndex(ind - 1);
+    if (!old) {
+        QMessageBox::warning(this, "Замена", "Объект с указанным номером не найден.");
+        ui->IndexlineEdit->clear();
+        return;
+    }
 
     if (Book::getByIndex(ind - 1)->getData().type == "Book" && (publisher.isEmpty() || pages.isEmpty())) {
-        Book* obj = new Book(title, author, year);
-        if(Book::ReplaceAt(ind - 1, obj))
+        if(publisher.isEmpty() ^ pages.isEmpty())
         {
-            //!
+            QMessageBox::warning(this, "Замена", "Нельзя заменить книгу на издание без всех полей.");
+            return;
+        }
+        Book* obj = new Book(title, author, year);
+        if(!Book::ReplaceAt(ind - 1, obj))
+        {
+            QMessageBox::information(this, "Замена", "Неудалось заменить книгу");
         }
     } else {
         PublicPrintedEdition* obj = new PublicPrintedEdition(title, author, year, publisher, pages);
-        if(Book::ReplaceAt(ind - 1, obj))
+        if(!Book::ReplaceAt(ind - 1, obj))
         {
-            //!
+            QMessageBox::information(this, "Замена", "Неудалось заменить книгу");
         }
     }
 
@@ -126,9 +142,18 @@ void MainWindow::on_FindButton_clicked()
     QString author = ui->AuthorlineEdit->text().trimmed();
     QString year = ui->YearlineEdit->text().trimmed();
     QString publisher = ui->PublisherlineEdit->text().trimmed();
-    QString pages = ui->PagelineEdit->text().trimmed().trimmed();
+    QString pages = ui->PagelineEdit->text().trimmed();
 
-    Update_Table(Book::FindDataExtended(title, author, year, publisher, pages));
+    QVector<Book::BookData> data = Book::FindDataExtended(title, author, year, publisher, pages);
+
+    if(data.size() != 0)
+    {
+        Update_Table(data);
+    }
+    else
+    {
+        QMessageBox::information(this, "Результат поиска", "Ни одного объекта не найдено по заданным критериям.");
+    }
 
     ui->NamelineEdit->clear();
     ui->AuthorlineEdit->clear();
@@ -146,7 +171,58 @@ void MainWindow::on_ShowButton_clicked()
 
 void MainWindow::on_LoadButton_clicked()
 {
+    Book::Clear();
+    QFile input("input.txt");
+    if(input.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream in(&input);
+        QString line = in.readLine().trimmed();
+        int count = line.toInt();
+        while(count--)
+        {
+            line = in.readLine().trimmed();
+            QStringList parts = line.split(';');
 
+            QString title = parts[1];
+            QString author = parts[2];
+            QString year = parts[3];
+            QString publisher;
+            QString pages;
+
+            if(parts[0] == "PublicPrintedEdition")
+            {
+                publisher = parts[4];
+                pages = parts[5];
+            }
+
+            if(title.isEmpty() || author.isEmpty() || year.isEmpty() || (publisher.isEmpty() ^ (pages.isEmpty())))
+            {
+                QMessageBox::warning(this, "Ошибка загрузки", "Некорректные данные в файле. Проверьте формат.");
+                return;
+            }
+
+            if (publisher.isEmpty() || pages.isEmpty()) {
+                Book* obj = new Book(title, author, year);
+                Book::Add(obj);
+            } else {
+                PublicPrintedEdition* obj = new PublicPrintedEdition(title, author, year, publisher, pages);
+                Book::Add(obj);
+            }
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, "Ошибка", "Не удалось открыть файл input.txt для чтения.");
+        return;
+    }
+    Update_Table(Book::AllData());
+}
+
+
+void MainWindow::on_ClearButton_clicked()
+{
+    Book::Clear();
+    Update_Table(Book::AllData());
 }
 
 
@@ -154,41 +230,43 @@ void MainWindow::on_InfoButton_clicked()
 {
     QString info =
         "Программа управления списком книг и печатных изданий\n\n"
-        "Функциональность:\n"
-        "1. Добавление объекта\n"
-        "   • Введите название, автора, год издания.\n"
-        "   • Для печатных изданий также укажите издательство и количество страниц.\n"
-        "   • Нажмите \"Добавить\".\n\n"
+        "Функции:\n"
+        "   Добавление объекта:\n"
+        "  • Укажите название, автора и год издания.\n"
+        "  • Для издания дополнительно введите издательство и количество страниц.\n"
+        "  • Если заполнены только частично — появится предупреждение.\n\n"
 
-        "2. Удаление объекта\n"
-        "   • Введите номер объекта (с 1).\n"
-        "   • Нажмите \"Удалить\".\n\n"
+        "   Удаление:\n"
+        "  • Введите номер объекта (с 1) и нажмите \"Удалить\".\n"
+        "  • При ошибке появится предупреждение.\n\n"
 
-        "3. Замена объекта\n"
-        "   • Введите номер объекта, который хотите заменить.\n"
-        "   • Заполните поля новыми значениями.\n"
-        "   • Можно заменить книгу на печатное издание и наоборот.\n"
-        "   • Нажмите \"Заменить\".\n\n"
+        "   Замена:\n"
+        "  • Введите номер заменяемого объекта.\n"
+        "  • Укажите любые новые данные. Пустые поля сохранят старые значения.\n"
+        "  • Можно заменить книгу на издание и наоборот.\n\n"
 
-        "4. Поиск объектов\n"
-        "   • Укажите любые из следующих полей: название, автор, год издания,\n"
-        "     издательство, количество страниц.\n"
-        "   • Оставьте неиспользуемые поля пустыми.\n"
-        "   • Нажмите \"Поиск\".\n\n"
+        "   Поиск:\n"
+        "  • Укажите любое сочетание полей.\n"
+        "  • Если не найдено — будет сообщение.\n\n"
 
-        "5. Показать все\n"
-        "   • Нажмите \"Показать все\", чтобы вывести весь список книг и изданий.\n\n"
+        "   Показать все:\n"
+        "  • Показывает весь текущий список объектов.\n\n"
 
-        "6. Выход\n"
-        "   • Нажмите \"Выход\" для закрытия программы.\n\n"
+        "   Загрузка из файла:\n"
+        "  • Файл \"input.txt\" должен содержать количество объектов и список:\n"
+        "    Book;Название;Автор;Год\n"
+        "    PublicPrintedEdition;Название;Автор;Год;Издательство;Страницы\n"
+        "  • Загруженные данные заменяют текущие.\n\n"
 
-        "Примечания:\n"
-        "• Нумерация объектов начинается с 1 (как указано в поле \"Номер\").\n"
-        "• После каждой операции таблица обновляется автоматически.\n";
+        "   Очистка:\n"
+        "  • Полностью очищает список объектов.\n\n"
+
+        "   Выход:\n"
+        "  • Завершает работу программы.\n\n"
+        "   Все действия автоматически обновляют таблицу.";
 
     QMessageBox::information(this, "Справка", info);
 }
-
 
 void MainWindow::on_ExitButton_clicked()
 {

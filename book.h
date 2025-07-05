@@ -36,6 +36,7 @@ public:
     static Book* getByIndex(int ind);
     virtual BookData getData() const;
     static bool ReplaceAt(int index, Book* newObj);
+    static void Clear();
 };
 
 #endif // BOOK_H
