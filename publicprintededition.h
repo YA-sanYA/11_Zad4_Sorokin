@@ -16,6 +16,9 @@ public:
     bool Matches(QString mt, QString ma, QString my, QString mpubl, QString mp) const;
     bool Repl(QString new_t, QString new_a, QString new_y) override;
     bool Repl(QString new_t, QString new_a, QString new_y, QString new_publ, QString new_p);
+    void Replace(Book* old) override;
+    void Replace(Book* newObj, Book* old);
+
 };
 
 #endif // PUBLICPRINTEDEDITION_H

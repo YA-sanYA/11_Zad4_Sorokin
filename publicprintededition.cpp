@@ -27,3 +27,12 @@ bool PublicPrintedEdition::Repl(QString new_t, QString new_a, QString new_y, QSt
     p = new_p;
     return true;
 }
+
+void PublicPrintedEdition::Replace(Book* oldBase) {
+    Book::Replace(oldBase);
+    auto* old = dynamic_cast<PublicPrintedEdition*>(oldBase);
+    if (!old) return;
+    if (publ.isEmpty()) publ = old->publ;
+    if (p.isEmpty()) p = old->p;
+}
+

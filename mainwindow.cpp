@@ -18,10 +18,10 @@ MainWindow::~MainWindow()
 void MainWindow::Update_Table(const QVector<Book::BookData>& data)
 {
     ui->tableWidget->clear();
-    ui->tableWidget->setColumnCount(5);
+    ui->tableWidget->setColumnCount(6);
     ui->tableWidget->setRowCount(data.size());
 
-    QStringList head = {"Название", "Автор", "Год издания", "Количество страниц", "Издательство"};
+    QStringList head = {"Название", "Автор", "Год издания", "Количество страниц", "Издательство", "Тип"};
     ui->tableWidget->setHorizontalHeaderLabels(head);
 
     for(int i = 0; i < data.size(); i++)
@@ -32,6 +32,7 @@ void MainWindow::Update_Table(const QVector<Book::BookData>& data)
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(obj.year));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(!obj.pages.isEmpty() ? obj.pages : "-"));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(!obj.publisher.isEmpty() ? obj.publisher : "-"));
+        ui->tableWidget->setItem(i, 5, new QTableWidgetItem(obj.type));
     }
     auto* header = ui->tableWidget->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::Interactive);
@@ -94,7 +95,7 @@ void MainWindow::on_ReplaceButton_clicked()
     QString publisher = ui->PublisherlineEdit->text().trimmed();
     QString pages = ui->PagelineEdit->text().trimmed().trimmed();
 
-    if (publisher.isEmpty() || pages.isEmpty()) {
+    if (Book::getByIndex(ind - 1)->getData().type == "Book" && (publisher.isEmpty() || pages.isEmpty())) {
         Book* obj = new Book(title, author, year);
         if(Book::ReplaceAt(ind - 1, obj))
         {
@@ -143,6 +144,12 @@ void MainWindow::on_ShowButton_clicked()
 }
 
 
+void MainWindow::on_LoadButton_clicked()
+{
+
+}
+
+
 void MainWindow::on_InfoButton_clicked()
 {
     QString info =
@@ -187,4 +194,3 @@ void MainWindow::on_ExitButton_clicked()
 {
     QApplication::quit();
 }
-

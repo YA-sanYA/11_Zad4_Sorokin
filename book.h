@@ -27,6 +27,7 @@ public:
 
     virtual bool Matches(QString mt, QString ma, QString my) const;
     virtual bool Repl(QString new_t, QString new_a, QString new_y);
+    virtual void Replace(Book* old);
 
     static void Add(Book* obj);
     static bool Del(int ind);

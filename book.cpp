@@ -16,6 +16,12 @@ bool Book::Matches(QString mt, QString ma, QString my) const {
            (my.isEmpty() || y == my);
 }
 
+void Book::Replace(Book* old) {
+    if (t.isEmpty()) t = old->t;
+    if (a.isEmpty()) a = old->a;
+    if (y.isEmpty()) y = old->y;
+}
+
 bool Book::Repl(QString new_t, QString new_a, QString new_y) {
     t = new_t;
     a = new_a;
@@ -103,28 +109,26 @@ Book* Book::getByIndex(int ind) {
 bool Book::ReplaceAt(int index, Book* newObj) {
     if (!first) return false;
 
-    if (index == 0) {
-        newObj->next = first->next;
-        delete first;
-        first = newObj;
-        if (!newObj->next) tail = newObj;
-        return true;
+    Book* prev = nullptr;
+    Book* old = first;
+    for (int i = 0; i < index && old; ++i) {
+        prev = old;
+        old = old->next;
     }
 
-    Book* prev = first;
-    for (int i = 0; i < index - 1 && prev; ++i)
-        prev = prev->next;
+    if (!old) return false;
 
-    if (!prev || !prev->next) return false;
-
-    Book* old = prev->next;
+    newObj->Replace(old);
     newObj->next = old->next;
-    prev->next = newObj;
+
+    if (!prev) {
+        first = newObj;
+    } else {
+        prev->next = newObj;
+    }
 
     if (!newObj->next) tail = newObj;
 
     delete old;
     return true;
 }
-
-
