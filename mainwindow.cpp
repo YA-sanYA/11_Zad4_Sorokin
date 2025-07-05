@@ -20,10 +20,10 @@ MainWindow::~MainWindow()
 void MainWindow::Update_Table(const QVector<Book::BookData>& data)
 {
     ui->tableWidget->clear();
-    ui->tableWidget->setColumnCount(6);
+    ui->tableWidget->setColumnCount(5);
     ui->tableWidget->setRowCount(data.size());
 
-    QStringList head = {"Название", "Автор", "Год издания", "Количество страниц", "Издательство", "Тип"};
+    QStringList head = {"Название", "Автор", "Год издания", "Количество страниц", "Издательство"};
     ui->tableWidget->setHorizontalHeaderLabels(head);
 
     for(int i = 0; i < data.size(); i++)
@@ -34,7 +34,6 @@ void MainWindow::Update_Table(const QVector<Book::BookData>& data)
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(obj.year));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(!obj.pages.isEmpty() ? obj.pages : "-"));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(!obj.publisher.isEmpty() ? obj.publisher : "-"));
-        ui->tableWidget->setItem(i, 5, new QTableWidgetItem(obj.type));
     }
     auto* header = ui->tableWidget->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::Interactive);
