@@ -10,6 +10,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QRegularExpression rx("\\d*");
+    QValidator *validator = new QRegularExpressionValidator(rx, this);
+    ui->IndexlineEdit->setValidator(validator);
+    ui->YearlineEdit->setValidator(validator);
+    ui->PagelineEdit->setValidator(validator);
 }
 
 MainWindow::~MainWindow()
@@ -221,6 +227,12 @@ void MainWindow::on_LoadButton_clicked()
 void MainWindow::on_ClearButton_clicked()
 {
     Book::Clear();
+    ui->IndexlineEdit->clear();
+    ui->NamelineEdit->clear();
+    ui->AuthorlineEdit->clear();
+    ui->YearlineEdit->clear();
+    ui->PagelineEdit->clear();
+    ui->PublisherlineEdit->clear();
     Update_Table(Book::AllData());
 }
 
